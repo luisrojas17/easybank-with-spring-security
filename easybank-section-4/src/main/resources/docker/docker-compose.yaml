@@ -1,0 +1,24 @@
+
+services:
+  # This is the service name mysql-server
+  mysql-server:
+    container_name: easybank-server-1
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root@2025
+      - MYSQL_DATABASE=easybank
+      - MYSQL_USER=easybank-user
+      - MYSQL_PASSWORD=easybank-password@2025
+    volumes:
+      - $HOME/mysql/data:/var/lib/mysql
+
+  # This is the service name mysql-client
+  mysql-client:
+    container_name: easybank-client-1
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root@2025
+    depends_on:
+      - mysql-server
