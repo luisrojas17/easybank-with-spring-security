@@ -4,16 +4,43 @@ avoid using the default user defined in:
 
     ** org.springframework.boot.autoconfigure.security.SecurityProperties
 
-## Default Spring Security configuration
+To start the application from command line you can use next commands:
+
+Using Java jar command:
+
+    ** java -jar target/easybank-section-4-1.0.0.jar
+
+Using Maven:
+
+    ** mvn spring-boot:run
+
+However, it is necessary to add next plugin to your pom.xml file:
+
+```
+...
+<build>
+    <plugins>
+    ...
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    ..
+    </plugins>
+</build>
+...
+```
+
+## Default Spring Security Configuration
 By default, Spring protects all the application. The code is written in Spring Security Configuration class:
 
     ** org.springframework.boot.autoconfigure.security.servlet.SpringBootWebSecurityConfiguration:defaultSecurityFilterChain
 
 If you want to change default security configuration you must override that class' method in your project.
 
-    ** See: com.easybank.security.config.SecurityConfig:defaultSecurityFilterChain
+    ** See: com.easybank.commons.security.config.SecurityConfig:defaultSecurityFilterChain
 
-## Default user in Spring Security configuration
+## Default User in Spring Security Configuration
 To consume any resource in application with Spring Security you will have to provide the credentials 
 in order to authenticate the user into application. The user that you have to use is: "user" and the password 
 is generated random way. Take a look in the console when the application has stated and you will see a message 
@@ -34,14 +61,14 @@ through next properties in application.properties or application.yml file:
 
     ** See: [You can check this link to learn more about properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
 
-## Create custom users in memory
+## Create Custom Users in Memory
 To create a new memory users you have to provide a method that returns an instance of
 org.springframework.security.core.userdetails.User and pass the list of users to the constructor of 
 org.springframework.security.core.userdetails.UserDetailsService.
 
-    ** See: com.easybank.security.config.SecurityConfig:buildUserDetailsService
+    ** See: com.easybank.commons.security.config.SecurityConfig:buildUserDetailsService
 
-## Password encoder
+## Password Encoder
 In addition, if you do not provide an instance of org.springframework.security.crypto.password.PasswordEncoder 
 you should set the password with prefix '{noop}anyPasswordString'. 
 
@@ -56,7 +83,7 @@ password encoders. By default, password encoder it will be org.springframework.s
 
     ** Please use next URL in order to encode your password: https://bcrypt-generator.com
 
-## Check if the password has compromised
+## Check if the Password Has Compromised
 To check if the password has compromised you can define an implementation of  
 **org.springframework.security.authentication.password.CompromisedPasswordChecker** specifically an instance of
 **org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker**. This implementation
@@ -65,7 +92,7 @@ validated is: [Have I Been Pwned REST API](https://haveibeenpwned.com/API/v3#Pwn
 
     ** Note: This feature is available only in Spring Security 6.X.X version or higher. 
 
-## Create users in database
+## Create Custom Users in Database
 To enable the creation of users in database you have to add next dependency in pom.xml file:
 
 ```
@@ -81,12 +108,12 @@ To enable the creation of users in database you have to add next dependency in p
 </dependency>
 ```
 
-### org.springframework.security.core.userdetails.jdbc.JdbcDetailsManager
+### org.springframework.security.provisioning.JdbcUserDetailsManager
 This class is a specialization of org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl which provides 
-CRUD operations for both users and groups. However, if you use JdbcDetailsManager class to get the user details, 
+CRUD operations for users and groups. However, if you use JdbcUserDetailsManager class to get the user details, 
 you will be to force to use the default schema structure which is defined in class 
 org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl which uses JdbcTemplate to retrieve user details 
-from a database. In this class is defined the schema structure that will be created in the database. 
+from a database. In this class is defined the schema structure that you will have to create in the database. 
 The tables to be created are:
 
     ** users
@@ -99,17 +126,37 @@ To get more details about the schema to be created you can check next file:
 
     Note: This file is located in the jar file: spring-security-core-6.3.6.jar
 
+To use org.springframework.security.provisioning.JdbcUserDetailsManager you will have to indicate to Spring Security
+that you want to use this class. That is why, you will have to define a bean creation in spring configuration class. 
+For example:
+```
+@Configuration
+public class SecurityConfig {
+
+....
+
+@Bean
+public UserDetailsService buildUserDetailsService(DataSource dataSource) {
+return new JdbcUserDetailsManager(dataSource);
+}
+
+.....
+
+}
+```
+
+### Customize Database Schema to Create Users in Database
 If you want to use your own schema (tables) to authenticate users you will have to implement your own
 org.springframework.security.core.userdetails.UserDetailsService class. See next class:
-    
-    ** com.easybank.service.CustomUserDetailsService
 
-And remove any AuthenticationManager bean definition provided by Spring Security defined in your custom 
-security config class. See next class: 
+    ** com.easybank.services.CustomUserDetailsService
 
-    ** com.easybank.security.config.SecurityConfig
+And remove any AuthenticationManager bean definition provided by Spring Security defined in your custom
+security config class. See next class:
 
-### Enable JPA entities and repositories
+    ** com.easybank.commons.security.config.SecurityConfig
+
+### Enable JPA Entities and Repositories
 To enable JPA entities and repositories you have to add next dependency in pom.xml file:
 
 ```
@@ -118,14 +165,25 @@ To enable JPA entities and repositories you have to add next dependency in pom.x
 	<artifactId>spring-boot-starter-data-jpa</artifactId>
 </dependency>
 ```
-After that, you will have to add next annotations to enable auto-scanning entities and repositories in your main 
+After that, you will have to add next annotations to enable auto-scanning entities and repositories in your main
 spring boot class:
 
     ** @EnableJpaRepositories("com.easybank.repository")
     ** @EntityScan("com.easybank.entity")
 
-However, if you have all your repositories and entities classes inside the main package, for example in a subpackage, 
+However, if you have all your repositories and entities classes inside the main package, for example in a subpackage,
 those annotations are not necessary.
+
+## Disable Spring Security CSRF Configuration
+By default, Spring Security does not allow to consume any API through HTTP POST, PUT and DELETE methods without 
+authenticate the request. If you consume the API through any of these methods Spring security will require 
+to authenticate the request. On the other hand, if you need to expose and consuming the API without authenticate 
+the request you will have to disable CSFR protection provided by Spring Security through
+org.springframework.security.config.annotation.web.builders.HttpSecurity:csrf. See next configuration class:
+
+    ** com.easybank.commons.security.config.SecurityConfig:defaultSecurityFilterChain
+
+The unique way to consume an API without authenticate the request is through HTTP GET method.
 
 ## Install MySQL through Docker
 To install MySQL in Docker you can use next command:

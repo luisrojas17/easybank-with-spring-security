@@ -1,14 +1,14 @@
-package com.easybank.controller;
+package com.easybank.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LoansController {
+public class AccountController {
 
-    @GetMapping("/myLoans")
+    @GetMapping("/myAccount")
     public String getDetails() {
-        return "Here are the loans details from DB.";
+        return "Here are the account details from DB.";
     }
 
 }

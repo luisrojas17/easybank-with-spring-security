@@ -1,4 +1,4 @@
-package com.easybank.respository.entity;
+package com.easybank.commons.repositories.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +13,7 @@ public class CustomerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "email")
     private String email;

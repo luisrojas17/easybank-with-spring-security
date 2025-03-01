@@ -1,8 +1,8 @@
-package com.easybank.service;
+package com.easybank.services;
 
 
-import com.easybank.respository.CustomerRepository;
-import com.easybank.respository.entity.CustomerEntity;
+import com.easybank.commons.repositories.CustomerRepository;
+import com.easybank.commons.repositories.entities.CustomerEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // we define a supplier method to throw an exception if the user is not found
         CustomerEntity customerEntity =
                 customerRepository.findByEmail(username).orElseThrow(() ->
-                        new UsernameNotFoundException("User not found" + username));
+                        new UsernameNotFoundException(String.format("User not found [%s]", username)));
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(customerEntity.getRole()));
 

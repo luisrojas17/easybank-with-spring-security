@@ -1,6 +1,6 @@
-package com.easybank.respository;
+package com.easybank.commons.repositories;
 
-import com.easybank.respository.entity.CustomerEntity;
+import com.easybank.commons.repositories.entities.CustomerEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
