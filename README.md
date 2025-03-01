@@ -6,6 +6,10 @@ To start the application from command line you can use next commands:
 
 Using Java jar command:
 
+    ** java -jar target/easybank-section-X-1.0.0.jar
+    
+Where X means number module that you can run. For example:
+
     ** java -jar target/easybank-section-4-1.0.0.jar
 
 Using Maven:
