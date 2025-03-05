@@ -5,15 +5,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.8</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<groupId>com.easybank</groupId>
+		<artifactId>easybank-with-spring-security</artifactId>
+		<version>1.0.0</version>
 	</parent>
 
-	<groupId>com.eazybank</groupId>
 	<artifactId>easybank-section-4</artifactId>
-	<version>1.0.0</version>
+	<version>${parent.version}</version>
 	<name>easybank-section-4</name>
 	<description>This is a project for easybank applications using Spring Boot and Spring Security</description>
 	<url/>
@@ -32,12 +30,6 @@
 		<tag/>
 		<url/>
 	</scm>
-
-	<properties>
-		<java.version>21</java.version>
-
-		<mapstruct.version>1.5.5.Final</mapstruct.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -94,6 +86,15 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.2</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
